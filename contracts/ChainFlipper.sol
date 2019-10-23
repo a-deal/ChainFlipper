@@ -1,59 +1,76 @@
 pragma solidity ^0.5.0;
 
-/// @title A simulated coin flipper with rewards for winners
+import "./provableAPI_0.5.sol";
+import "./SafeMath.sol";
+
+/// @title A simulated coin flipper with rewards for winners!
 /// @author Andrew Deal
 /// @notice You can use this contract to win ETH if you guess heads or tails correctly!
-contract ChainFlipper {
+contract ChainFlipper is usingProvable {
 
-  Outcomes prediction;
-  mapping (address => Record) private records;
+  using SafeMath for uint;
 
-  struct Record {
-    uint wins;
-    uint losses;
-  }
+  uint constant MAX_INT_FROM_BYTE = 256;
+  uint constant NUM_RANDOM_BYTES_REQUESTED = 7;
+
+  mapping (bytes32 => Flip) private flipsInProgress;
 
   enum Outcomes {
     Tails,
     Heads
   }
-
-  /// @param _guess represents a guess by an account
-  event Prediction(Outcomes indexed _guess , address indexed _player);
-  /// @param _result represents the result returned by a RNG
-  event Result(Outcomes indexed _result, address indexed _player);
-
-  constructor() public {
-    records[msg.sender] = Record({wins: 0, losses: 0});
+  struct Flip {
+    Outcomes prediction;
+    address sender;
   }
 
-  /// @notice Retrieves the current record for a given player
-  /// @param _player An account address tied to a specific address
-  /// @return win and loss count
-  function getRecord(address _player) public view returns(uint, uint) {
-    return (records[_player].wins, records[_player].losses);
+  /// @param _prediction represents a guess by an account
+  /// @param _player represents a player's address
+  event Prediction(address indexed _player, Outcomes _prediction);
+  /// @param _result represents the coin flip result
+  /// @param _player represents a player's address
+  event Result(address indexed _player, Outcomes indexed _result);
+
+  constructor() public {
+    provable_setProof(proofType_Ledger);
+  }
+
+  function __callback(
+    bytes32 _queryId,
+    string memory _result,
+    bytes memory _proof
+  ) public {
+    require(msg.sender == provable_cbAddress());
+    require(flipsInProgress[_queryId].sender != address(0), "Flip query not found");
+
+    if (provable_randomDS_proofVerify__returnCode(_queryId, _result, _proof) != 0) {
+      revert('Invalid proof while generating random number with Provable');
+    } else {
+      uint ceiling = (MAX_INT_FROM_BYTE ** NUM_RANDOM_BYTES_REQUESTED) - 1;
+      uint randomNumber = uint256(keccak256(abi.encodePacked(_result))) % ceiling;
+      uint flipResult = (randomNumber % 1);
+
+      Flip memory flip = flipsInProgress[_queryId];
+
+      emit Result(flip.sender, Outcomes(flipResult));
+      delete flipsInProgress[_queryId];
+    }
   }
 
   /// @notice Takes a player's guess and records it against a generated result
   /// @param _prediction a player's prediction
-  function flip(uint _prediction) public {
-    // TODO 
-    // Record prediction
-    // Generate Result
-    // Emit Result Event
-    // Update Player's record
-  }
+  function flip(uint _prediction) external {
+    emit Prediction(msg.sender, Outcomes(_prediction));
 
-  /// @notice Records a player's prediction of either Heads or Tails
-  /// @param _prediction the prediction of either Heads or Tails
-  /// @return the recorded player's prediction
-  function predict(uint _prediction) internal returns (uint) {
-    emit Prediction(Outcomes(_prediction), msg.sender);
-    if (_prediction == uint(Outcomes.Tails)) {
-      prediction = Outcomes.Tails;
-    } else {
-      prediction = Outcomes.Heads;
-    }
-    return uint(prediction);
+    uint QUERY_EXECUTION_DELAY = 0;
+    uint GAS_FOR_CALLBACK = 200000;
+
+    bytes32 queryId = provable_newRandomDSQuery(
+        QUERY_EXECUTION_DELAY,
+        NUM_RANDOM_BYTES_REQUESTED,
+        GAS_FOR_CALLBACK
+    );
+
+    flipsInProgress[queryId] = Flip(Outcomes(_prediction), msg.sender);
   }
 }
