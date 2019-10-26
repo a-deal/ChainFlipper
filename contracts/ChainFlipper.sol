@@ -31,7 +31,7 @@ contract ChainFlipper is usingProvable {
 
   /// @param _result represents the coin flip result
   /// @param _player represents a player's address
-  event LogResult(address indexed _player, Outcomes indexed _result);
+  event LogResult(address indexed _player, Outcomes _result, bytes32 _queryId);
 
   constructor() public payable {
     // require(msg.value > 1 ether, '1 ether initial funding required');
@@ -56,7 +56,7 @@ contract ChainFlipper is usingProvable {
 
       Flip memory flip = flipsInProgress[_queryId];
 
-      emit LogResult(flip.sender, Outcomes(flipResult));
+      emit LogResult(flip.sender, Outcomes(flipResult), _queryId);
       delete flipsInProgress[_queryId];
     }
   }
