@@ -18,7 +18,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .js,.jsx",
-    "lint:fix": "eslint --fix . --ext .js,.jsx"
+    "lint:fix": "eslint --fix . --ext .js,.jsx",
+    "prettier": "prettier -c ./src/**/*.js",
+    "prettier:fix": "prettier --write ./src/**/*.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,6 +32,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "eslint": "^6.6.0"
+    "eslint": "^6.6.0",
+    "prettier": "1.18.2"
   }
 }

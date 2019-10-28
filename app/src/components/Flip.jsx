@@ -1,17 +1,17 @@
-import React from "react";
-import { drizzleReactHooks } from "drizzle-react";
-import PropTypes from "prop-types";
+import React from "react"
+import { drizzleReactHooks } from "drizzle-react"
+import PropTypes from "prop-types"
 
 const Flip = ({ address, record }) => {
-  const { drizzle } = drizzleReactHooks.useDrizzle();
-  const flip = drizzle.contracts.ChainFlipper.methods.flip;
+  const { drizzle } = drizzleReactHooks.useDrizzle()
+  const flip = drizzle.contracts.ChainFlipper.methods.flip
 
   const handleToss = async event => {
-    const choice = event.target.dataset.tails ? 0 : 1;
+    const choice = event.target.dataset.tails ? 0 : 1
 
-    const gas = await flip(choice).estimateGas({ from: address, gas: 6e6 });
-    await flip(choice).send({ from: address, gas });
-  };
+    const gas = await flip(choice).estimateGas({ from: address, gas: 6e6 })
+    await flip(choice).send({ from: address, gas })
+  }
 
   return (
     <section>
@@ -26,12 +26,12 @@ const Flip = ({ address, record }) => {
         Heads
       </button>
     </section>
-  );
-};
+  )
+}
 
 Flip.propTypes = {
   address: PropTypes.string,
-  record: PropTypes.object
-};
+  record: PropTypes.object,
+}
 
-export default Flip;
+export default Flip

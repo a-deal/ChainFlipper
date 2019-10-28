@@ -1,21 +1,21 @@
-import React from "react";
-import styled from "styled-components";
-import { drizzleReactHooks } from "drizzle-react";
+import React from "react"
+import styled from "styled-components"
+import { drizzleReactHooks } from "drizzle-react"
 
-import Account from "./Account";
-import Flip from "./Flip";
+import Account from "./Account"
+import Flip from "./Flip"
 
 const StyledContainer = styled.div`
   text-align: center;
   margin: 2rem;
-`;
+`
 
 const App = () => {
   const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
     userAddress: drizzleState.accounts[0],
     balance: drizzleState.accountBalances[drizzleState.accounts[0]],
-    record: drizzleState.record
-  }));
+    record: drizzleState.record,
+  }))
 
   return (
     <StyledContainer>
@@ -26,12 +26,12 @@ const App = () => {
       <Account
         account={{
           address: drizzleState.userAddress,
-          balance: drizzleState.balance
+          balance: drizzleState.balance,
         }}
       />
       <Flip address={drizzleState.address} record={drizzleState.record} />
     </StyledContainer>
-  );
-};
+  )
+}
 
-export default App;
+export default App

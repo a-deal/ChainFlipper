@@ -1,3 +1,3 @@
-import record from "./record";
+import record from "./record"
 
-export default { record };
+export default { record }
