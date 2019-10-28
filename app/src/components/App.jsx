@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { drizzleReactHooks } from "drizzle-react";
-// import { connect } from "react-redux";
 
 import Account from "./Account";
 import Flip from "./Flip";
