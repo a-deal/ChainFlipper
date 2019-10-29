@@ -4,6 +4,7 @@ import { drizzleReactHooks } from "drizzle-react"
 
 import Account from "./Account"
 import Flip from "./Flip"
+import Coin from "./Coin"
 
 const StyledContainer = styled.div`
   text-align: center;
@@ -30,6 +31,7 @@ const App = () => {
         }}
       />
       <Flip address={drizzleState.address} record={drizzleState.record} />
+      <Coin />
     </StyledContainer>
   )
 }
