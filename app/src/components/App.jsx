@@ -1,10 +1,10 @@
-import React from "react"
-import styled from "styled-components"
-import { drizzleReactHooks } from "drizzle-react"
+import React from 'react'
+import styled from 'styled-components'
+import { drizzleReactHooks } from 'drizzle-react'
 
-import Account from "./Account"
-import Flip from "./Flip"
-import Coin from "./Coin"
+import Account from './Account'
+import Flip from './Flip'
+import Coin from './Coin'
 
 const StyledContainer = styled.div`
   text-align: center;
@@ -12,28 +12,28 @@ const StyledContainer = styled.div`
 `
 
 const App = () => {
-  const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
-    userAddress: drizzleState.accounts[0],
-    balance: drizzleState.accountBalances[drizzleState.accounts[0]],
-    record: drizzleState.record,
-  }))
+    const drizzleState = drizzleReactHooks.useDrizzleState(drizzleState => ({
+        userAddress: drizzleState.accounts[0],
+        balance: drizzleState.accountBalances[drizzleState.accounts[0]],
+        record: drizzleState.record,
+    }))
 
-  return (
-    <StyledContainer>
-      <section>
-        <h1>Welcome to ChainFlipper</h1>
-        <p>The easiest way to earn money... If you’re feeling lucky!</p>
-      </section>
-      <Account
-        account={{
-          address: drizzleState.userAddress,
-          balance: drizzleState.balance,
-        }}
-      />
-      <Flip address={drizzleState.address} record={drizzleState.record} />
-      <Coin />
-    </StyledContainer>
-  )
+    return (
+        <StyledContainer>
+            <section>
+                <h1>Welcome to ChainFlipper</h1>
+                <p>The easiest way to earn money... If you’re feeling lucky!</p>
+            </section>
+            <Account
+                account={{
+                    address: drizzleState.userAddress,
+                    balance: drizzleState.balance,
+                }}
+            />
+            <Flip address={drizzleState.address} record={drizzleState.record} />
+            <Coin />
+        </StyledContainer>
+    )
 }
 
 export default App

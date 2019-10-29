@@ -1,19 +1,19 @@
-import React from "react"
-import styled, { keyframes } from "styled-components"
-import { darken } from "polished"
+import React from 'react'
+import styled, { keyframes } from 'styled-components'
+import { darken } from 'polished'
 
 const diameter = 300
 const edgeFaces = 80
 
 const config = {
-  thickness: 20,
-  color: "#E8D0BB",
-  frontImageURL:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/US_One_Cent_Obv.png/440px-US_One_Cent_Obv.png",
-  backImageURL:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/US_One_Cent_Rev.png/440px-US_One_Cent_Rev.png",
-  edgeFaceLength: (3.14 * diameter) / edgeFaces,
-  turnTime: 1000,
+    thickness: 20,
+    color: '#E8D0BB',
+    frontImageURL:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/US_One_Cent_Obv.png/440px-US_One_Cent_Obv.png',
+    backImageURL:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/US_One_Cent_Rev.png/440px-US_One_Cent_Rev.png',
+    edgeFaceLength: (3.14 * diameter) / edgeFaces,
+    turnTime: 1000,
 }
 
 const shine = keyframes`
@@ -57,7 +57,7 @@ const StyledCoinFace = styled.div`
       ${props =>
         props.back ? -(config.thickness / 2) : config.thickness / 2}px
     )
-    rotateY(${props => (props.back ? "180deg" : "0deg")});
+    rotateY(${props => (props.back ? '180deg' : '0deg')});
   width: ${diameter}px;
 
   &:after {
@@ -84,13 +84,13 @@ const StyledCoinEdgeContainer = styled.div`
 
 const StyledCoinEdge = styled.div`
   background: ${props =>
-    darken(
-      (((props.index - edgeFaces / 2) * (props.index - edgeFaces / 2)) /
+        darken(
+            (((props.index - edgeFaces / 2) * (props.index - edgeFaces / 2)) /
         ((edgeFaces * edgeFaces) / 4)) *
         100 *
         0.7,
-      config.color
-    )};
+            config.color
+        )};
   transform: translateY(${diameter / 2 - config.edgeFaceLength / 2}px)
     translateX(${diameter / 2 - config.thickness / 2}px)
     rotateZ(${props => (360 / edgeFaces) * props.index + 90}deg)
@@ -109,18 +109,18 @@ const StyledCoinShadow = styled.div`
 `
 
 const Coin = () => {
-  return (
-    <StyledCoin diameter={diameter} turnTime={config.turnTime}>
-      <StyledCoinFace imageURL={config.frontImageURL}></StyledCoinFace>
-      <StyledCoinEdgeContainer>
-        {Array.apply(null, Array(80)).map((v, i) => (
-          <StyledCoinEdge key={i} index={i}></StyledCoinEdge>
-        ))}
-      </StyledCoinEdgeContainer>
-      <StyledCoinFace back imageURL={config.backImageURL}></StyledCoinFace>
-      <StyledCoinShadow></StyledCoinShadow>
-    </StyledCoin>
-  )
+    return (
+        <StyledCoin diameter={diameter} turnTime={config.turnTime}>
+            <StyledCoinFace imageURL={config.frontImageURL}></StyledCoinFace>
+            <StyledCoinEdgeContainer>
+                {Array.apply(null, Array(80)).map((v, i) => (
+                    <StyledCoinEdge key={i} index={i}></StyledCoinEdge>
+                ))}
+            </StyledCoinEdgeContainer>
+            <StyledCoinFace back imageURL={config.backImageURL}></StyledCoinFace>
+            <StyledCoinShadow></StyledCoinShadow>
+        </StyledCoin>
+    )
 }
 
 export default Coin
