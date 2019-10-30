@@ -1,5 +1,5 @@
 import React from "react"
-import styled, { keyframes } from "styled-components"
+import styled, { keyframes, css } from "styled-components"
 import { darken } from "polished"
 import PropTypes from "prop-types"
 
@@ -36,7 +36,7 @@ const rotate3d = keyframes`
   }
 `
 
-const slidingRotate = keyframes`
+const slideAndRotate = keyframes`
   0%, 100% {
     transform: perspective(1000px) rotateY(0deg) translateX(0px);
   }
@@ -46,15 +46,24 @@ const slidingRotate = keyframes`
   }
 `
 
+const coinAnimation = css`
+  animation: ${props => (props.active ? rotate3d : slideAndRotate)}
+    ${props => (props.active ? config.turnTime : config.turnTime * 8)}ms linear
+    infinite;
+`
+const result = css`
+  transform: ${props =>
+    props.flipResult === "tails" ? "rotateY(180deg)" : "rotateY(0deg)"};
+`
+
 const StyledCoin = styled.div`
   position: relative;
   width: ${diameter}px;
   height: ${diameter}px;
   margin: 50px auto;
   transform-style: preserve-3d;
-  animation: ${props => (props.active ? rotate3d : slidingRotate)}
-    ${props => (props.active ? config.turnTime : config.turnTime * 8)}ms linear
-    infinite;
+  ${props =>
+    !props.active && props.flipResult.length ? result : coinAnimation};
   transition: all 0.3s;
 `
 
@@ -121,10 +130,11 @@ const StyledCoinShadow = styled.div`
   transform: rotateX(90deg) translateZ(-${diameter * 1.1}px) scale(0.5);
 `
 
-const Coin = ({ isSpinning = false }) => {
+const Coin = ({ isSpinning = false, flipResult }) => {
   return (
     <StyledCoin
       diameter={diameter}
+      flipResult={flipResult}
       turnTime={config.turnTime}
       active={isSpinning}
     >
@@ -142,6 +152,7 @@ const Coin = ({ isSpinning = false }) => {
 
 Coin.propTypes = {
   isSpinning: PropTypes.bool,
+  flipResult: PropTypes.string,
 }
 
 export default Coin

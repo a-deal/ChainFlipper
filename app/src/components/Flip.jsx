@@ -10,40 +10,74 @@ const StyledButtonGroup = styled.div`
   display: flex;
   justify-content: center;
 
-  button:first-child {
-    margin-right: 16px;
+  button {
+    filter: alpha(opacity=80);
+    font-size: 24px;
+    padding: 16px;
+    width: 100px;
+  }
+
+  button:hover:not(:disabled) {
+    transform: scale3d(1.1, 1.1, -0.9);
+    transition: all 0.25s ease-in;
+  }
+
+  button:disabled {
+    opacity: 0.25;
+    cursor: none;
   }
 `
 
-const Flip = ({ address, inProgress }) => {
+const StyledTailsButton = styled.button`
+  background-color: black;
+  color: white;
+`
+
+const StyledHeadsButton = styled.button`
+  background-color: white;
+  color: black;
+`
+
+const Flip = ({ address, inProgress, flip }) => {
   const { drizzle } = drizzleReactHooks.useDrizzle()
-  const flip = drizzle.contracts.ChainFlipper.methods.flip
+  const chainFlipper = drizzle.contracts.ChainFlipper.methods.flip
 
   const handleToss = async event => {
     const choice = event.target.dataset.tails ? 0 : 1
-    drizzle.store.dispatch({ type: FLIP_IN_PROGRESS })
-    const gas = await flip(choice).estimateGas({ from: address, gas: 6e6 })
-    await flip(choice).send({ from: address, gas })
+    drizzle.store.dispatch(FLIP_IN_PROGRESS)
+    const gas = await chainFlipper(choice).estimateGas({
+      from: address,
+      gas: 6e6,
+    })
+    await chainFlipper(choice).send({ from: address, gas })
   }
 
   return (
     <section>
       <StyledButtonGroup>
-        <button data-tails onClick={handleToss}>
+        <StyledTailsButton
+          disabled={inProgress}
+          data-tails
+          onClick={handleToss}
+        >
           Tails
-        </button>
-        <button data-heads onClick={handleToss}>
+        </StyledTailsButton>
+        <StyledHeadsButton
+          disabled={inProgress}
+          data-heads
+          onClick={handleToss}
+        >
           Heads
-        </button>
+        </StyledHeadsButton>
       </StyledButtonGroup>
-      <Coin isSpinning={inProgress} />
+      <Coin isSpinning={inProgress} flipResult={flip.result} />
     </section>
   )
 }
 
 Flip.propTypes = {
   address: PropTypes.string,
-  record: PropTypes.object,
+  flip: PropTypes.object,
   inProgress: PropTypes.bool,
 }
 
