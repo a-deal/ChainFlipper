@@ -1,19 +1,20 @@
-import React from 'react'
-import styled, { keyframes } from 'styled-components'
-import { darken } from 'polished'
+import React from "react"
+import styled, { keyframes } from "styled-components"
+import { darken } from "polished"
+import PropTypes from "prop-types"
 
 const diameter = 300
 const edgeFaces = 80
 
 const config = {
-    thickness: 20,
-    color: '#E8D0BB',
-    frontImageURL:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/US_One_Cent_Obv.png/440px-US_One_Cent_Obv.png',
-    backImageURL:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/US_One_Cent_Rev.png/440px-US_One_Cent_Rev.png',
-    edgeFaceLength: (3.14 * diameter) / edgeFaces,
-    turnTime: 1000,
+  thickness: 20,
+  color: "#E8D0BB",
+  frontImageURL:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/US_One_Cent_Obv.png/440px-US_One_Cent_Obv.png",
+  backImageURL:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/US_One_Cent_Rev.png/440px-US_One_Cent_Rev.png",
+  edgeFaceLength: (3.14 * diameter) / edgeFaces,
+  turnTime: 1000,
 }
 
 const shine = keyframes`
@@ -35,13 +36,25 @@ const rotate3d = keyframes`
   }
 `
 
+const slidingRotate = keyframes`
+  0%, 100% {
+    transform: perspective(1000px) rotateY(0deg) translateX(0px);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateY(180deg) translateX(20px);
+  }
+`
+
 const StyledCoin = styled.div`
   position: relative;
   width: ${diameter}px;
   height: ${diameter}px;
   margin: 50px auto;
   transform-style: preserve-3d;
-  animation: ${rotate3d} ${props => props.turnTime}ms linear infinite;
+  animation: ${props => (props.active ? rotate3d : slidingRotate)}
+    ${props => (props.active ? config.turnTime : config.turnTime * 8)}ms linear
+    infinite;
   transition: all 0.3s;
 `
 
@@ -55,9 +68,9 @@ const StyledCoinFace = styled.div`
   position: absolute;
   transform: translateZ(
       ${props =>
-        props.back ? -(config.thickness / 2) : config.thickness / 2}px
+    props.back ? -(config.thickness / 2) : config.thickness / 2}px
     )
-    rotateY(${props => (props.back ? '180deg' : '0deg')});
+    rotateY(${props => (props.back ? "180deg" : "0deg")});
   width: ${diameter}px;
 
   &:after {
@@ -84,13 +97,13 @@ const StyledCoinEdgeContainer = styled.div`
 
 const StyledCoinEdge = styled.div`
   background: ${props =>
-        darken(
-            (((props.index - edgeFaces / 2) * (props.index - edgeFaces / 2)) /
+    darken(
+      (((props.index - edgeFaces / 2) * (props.index - edgeFaces / 2)) /
         ((edgeFaces * edgeFaces) / 4)) *
         100 *
         0.7,
-            config.color
-        )};
+      config.color
+    )};
   transform: translateY(${diameter / 2 - config.edgeFaceLength / 2}px)
     translateX(${diameter / 2 - config.thickness / 2}px)
     rotateZ(${props => (360 / edgeFaces) * props.index + 90}deg)
@@ -108,19 +121,27 @@ const StyledCoinShadow = styled.div`
   transform: rotateX(90deg) translateZ(-${diameter * 1.1}px) scale(0.5);
 `
 
-const Coin = () => {
-    return (
-        <StyledCoin diameter={diameter} turnTime={config.turnTime}>
-            <StyledCoinFace imageURL={config.frontImageURL}></StyledCoinFace>
-            <StyledCoinEdgeContainer>
-                {Array.apply(null, Array(80)).map((v, i) => (
-                    <StyledCoinEdge key={i} index={i}></StyledCoinEdge>
-                ))}
-            </StyledCoinEdgeContainer>
-            <StyledCoinFace back imageURL={config.backImageURL}></StyledCoinFace>
-            <StyledCoinShadow></StyledCoinShadow>
-        </StyledCoin>
-    )
+const Coin = ({ isSpinning = false }) => {
+  return (
+    <StyledCoin
+      diameter={diameter}
+      turnTime={config.turnTime}
+      active={isSpinning}
+    >
+      <StyledCoinFace imageURL={config.frontImageURL}></StyledCoinFace>
+      <StyledCoinEdgeContainer>
+        {Array.apply(null, Array(80)).map((v, i) => (
+          <StyledCoinEdge key={i} index={i}></StyledCoinEdge>
+        ))}
+      </StyledCoinEdgeContainer>
+      <StyledCoinFace back imageURL={config.backImageURL}></StyledCoinFace>
+      <StyledCoinShadow></StyledCoinShadow>
+    </StyledCoin>
+  )
+}
+
+Coin.propTypes = {
+  isSpinning: PropTypes.bool,
 }
 
 export default Coin
